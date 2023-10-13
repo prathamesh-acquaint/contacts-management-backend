@@ -2,6 +2,14 @@ const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactsModel");
 
 // @desc Get all contacts
+// @route GET /api/contacts/all
+// @access public
+const getAllContacts = asyncHandler(async (req, res) => {
+  const contacts = await Contact.find();
+  res.status(200).json(contacts);
+});
+
+// @desc Get all contacts
 // @route GET /api/contacts
 // @access private
 const getContacts = asyncHandler(async (req, res) => {
@@ -74,6 +82,7 @@ const deleteContact = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getAllContacts,
   getContacts,
   getContact,
   createContact,

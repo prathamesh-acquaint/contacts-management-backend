@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const {
+  getAllContacts,
   getContacts,
   getContact,
   createContact,
@@ -11,6 +12,8 @@ const {
 const validateToken = require("../middleware/tokenHandler");
 
 router.use(validateToken);
+
+router.route("/all").get(getAllContacts);
 
 router.route("/").get(getContacts);
 
