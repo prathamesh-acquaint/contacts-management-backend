@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/contacts", require("./routes/contactsRoutes"));
 app.use("/api/users", require("./routes/usersRoutes"));
+app.use("/api/otp", require("./routes/otpRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {
