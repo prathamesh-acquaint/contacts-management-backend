@@ -48,20 +48,11 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route POST /api/user/register
 // @access public
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password, otp } = req.body;
+  const { email, password } = req.body;
 
-  if (!email || !password || !otp) {
+  if (!email || !password) {
     res.status(400);
     throw new Error("All fields are mandatory");
-  }
-
-  // Find the most recent OTP for the email
-  const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
-  if (response.length === 0 || otp !== response[0].otp) {
-    return res.status(400).json({
-      success: false,
-      message: "The OTP is not valid",
-    });
   }
 
   const user = await User.findOne({ email });

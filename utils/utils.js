@@ -10,10 +10,11 @@ const mailSender = async (email, title, body) => {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
+      service: "gmail",
     });
     // Send emails to users
     let info = await transporter.sendMail({
-      from: "www.contman.com - Prathamesh Trivedi",
+      from: process.env.MAIL_USER,
       to: email,
       subject: title,
       html: body,
