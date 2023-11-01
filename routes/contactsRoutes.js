@@ -8,6 +8,7 @@ const {
   createContact,
   updateContact,
   deleteContact,
+  downloadPdf,
 } = require("../controllers/contactsController");
 const validateToken = require("../middleware/tokenHandler");
 
@@ -24,5 +25,7 @@ router.route("/").post(createContact);
 router.route("/:id").put(updateContact);
 
 router.route("/:id").delete(deleteContact);
+
+router.route("/download-pdf").post(downloadPdf);
 
 module.exports = router;

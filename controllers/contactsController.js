@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactsModel");
+const { PDFDocument, rgb } = require("pdf-lib");
+const fs = require("fs");
 
 // @desc Get all contacts
 // @route GET /api/contacts/all
@@ -81,6 +83,47 @@ const deleteContact = asyncHandler(async (req, res) => {
   res.status(200).json(contact);
 });
 
+// @desc Delete contact
+// @route DELETE /api/contacts/:id
+// @access private
+const downloadPdf = asyncHandler(async (req, res) => {
+  try {
+    // Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+
+    // Add a new page
+    const page = pdfDoc.addPage([600, 400]);
+    const { width, height } = page.getSize();
+
+    // Get contact data from the request (assuming it's an array of contact objects)
+    const contacts = req.body.contacts;
+
+    // Create a text content for the PDF
+    const content = `Contacts:\n\n${contacts
+      .map((contact) => contact.name)
+      .join("\n")}`;
+    console.log(content);
+    // Add the text content to the PDF
+    page.drawText(content, {
+      x: 50,
+      y: height - 50,
+      size: 12,
+      color: rgb(0, 0, 0),
+    });
+
+    // Serialize the PDF to bytes
+    const pdfBytes = await pdfDoc.save();
+
+    // Send the PDF as a downloadable file
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=contacts.pdf");
+    res.send(pdfBytes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generating the PDF.");
+  }
+});
+
 module.exports = {
   getAllContacts,
   getContacts,
@@ -88,4 +131,5 @@ module.exports = {
   createContact,
   updateContact,
   deleteContact,
+  downloadPdf,
 };
