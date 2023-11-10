@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactsModel");
+const User = require("../models/userModel");
 const { PDFDocument, rgb } = require("pdf-lib");
 const fs = require("fs");
 
@@ -113,6 +114,7 @@ const downloadPdf = asyncHandler(async (req, res) => {
 
     // Serialize the PDF to bytes
     const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync("generated_contacts.pdf", pdfBytes);
 
     // Send the PDF as a downloadable file
     res.setHeader("Content-Type", "application/pdf");
@@ -124,6 +126,30 @@ const downloadPdf = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc Delete contact
+// @route POST /api/contacts/share
+// @access private
+const shareContact = asyncHandler(async (req, res) => {
+  const { name, email, phone, to } = req.body;
+  if (name && email && phone) {
+    const toShare = await User.findOne({ email: to });
+    if (toShare) {
+      const userId = toShare._id;
+      const contact = await Contact.create({
+        name,
+        email,
+        phone,
+        user_id: userId,
+      });
+      res.status(201).json(contact);
+    } else {
+      res.status(404).json({ message: "user is not valid" });
+    }
+  } else {
+    res.status(400).json({ message: "All filds are mandatory" });
+  }
+});
+
 module.exports = {
   getAllContacts,
   getContacts,
@@ -132,4 +158,5 @@ module.exports = {
   updateContact,
   deleteContact,
   downloadPdf,
+  shareContact,
 };
